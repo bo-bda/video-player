@@ -1,0 +1,44 @@
+# built application files
+*.apk
+*.ap_
+
+# files for the dex VM
+*.dex
+
+# Java class files
+*.class
+
+# generated files
+bin/
+gen/
+
+# Local configuration file (sdk path, etc)
+local.properties
+
+# Eclipse project files
+.classpath
+.project
+
+# Android Studio
+.idea/
+/*/local.properties
+/*/out
+/*/*/build
+/*/*/production
+*.iml
+*.iws
+*.ipr
+*~
+*.swp
+
+# gradle directory
+.gradle/
+build/
+
+# Dolphin files
+.directory
+
+# OSX files
+.DS_Store
+ijkplayer-armv7a/src/main/jni/android-ndk-prof
+ijkplayer-armv7a/src/main/jni/ijkmedia
