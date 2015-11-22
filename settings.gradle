@@ -1,3 +1,6 @@
 include ':app',
-        ':app:libs:ijkplayer-java'
+        ':app:libs:ijkplayer-java',
+        ':app:libs:ijkplayer-x86',
+        ':app:libs:ijkplayer-armv7a',
+        ':app:libs:ijkplayer-exo'
 

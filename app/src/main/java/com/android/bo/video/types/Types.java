@@ -1,7 +1,5 @@
 package com.android.bo.video.types;
 
-import com.android.bo.video.R;
-
 import java.util.ArrayList;
 
 /*
@@ -26,10 +24,10 @@ public class Types {
 
     public static ArrayList<Uris> RussainChannels = new ArrayList<Uris>() {
         {
-//            add(Uris.RussianTv);
-//            add(Uris.RusTelecom);
+            add(Uris.RussianTv);
+            add(Uris.RusTelecom);
             add(Uris.ZabavaSlyUkraine);
-//            add(Uris.Denms);
+            add(Uris.Denms);
         }
     };
 

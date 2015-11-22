@@ -45,12 +45,14 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.lang.ref.WeakReference;
 import java.lang.reflect.Field;
+import java.security.InvalidParameterException;
 import java.util.ArrayList;
 import java.util.Locale;
 import java.util.Map;
 
 import tv.danmaku.ijk.media.player.annotations.AccessedByNative;
 import tv.danmaku.ijk.media.player.annotations.CalledByNative;
+import tv.danmaku.ijk.media.player.misc.IMediaDataSource;
 import tv.danmaku.ijk.media.player.misc.ITrackInfo;
 import tv.danmaku.ijk.media.player.misc.IjkTrackInfo;
 import tv.danmaku.ijk.media.player.pragma.DebugLog;
@@ -102,10 +104,16 @@ public final class IjkMediaPlayer extends AbstractMediaPlayer {
     // properties
     public static final int PROP_FLOAT_VIDEO_DECODE_FRAMES_PER_SECOND = 10001;
     public static final int PROP_FLOAT_VIDEO_OUTPUT_FRAMES_PER_SECOND = 10002;
+    public static final int FFP_PROP_FLOAT_PLAYBACK_RATE              = 10003;
+
+    public static final int FFP_PROP_INT64_SELECTED_VIDEO_STREAM      = 20001;
+    public static final int FFP_PROP_INT64_SELECTED_AUDIO_STREAM      = 20002;
     //----------------------------------------
 
     @AccessedByNative
     private long mNativeMediaPlayer;
+    @AccessedByNative
+    private long mNativeMediaDataSource;
 
     @AccessedByNative
     private int mNativeSurfaceTexture;
@@ -147,7 +155,6 @@ public final class IjkMediaPlayer extends AbstractMediaPlayer {
                 libLoader.loadLibrary("ijkffmpeg");
                 libLoader.loadLibrary("ijksdl");
                 libLoader.loadLibrary("ijkplayer");
-                libLoader.loadLibrary("speex");
                 mIsLibLoaded = true;
             }
         }
@@ -436,11 +443,19 @@ public final class IjkMediaPlayer extends AbstractMediaPlayer {
         setDataSource(fd);
     }
 
+    public void setDataSource(IMediaDataSource mediaDataSource)
+            throws IllegalArgumentException, SecurityException, IllegalStateException {
+        _setDataSource(mediaDataSource);
+    }
+
     private native void _setDataSource(String path, String[] keys, String[] values)
             throws IOException, IllegalArgumentException, SecurityException, IllegalStateException;
 
     private native void _setDataSourceFd(int fd)
             throws IOException, IllegalArgumentException, SecurityException, IllegalStateException;
+
+    private native void _setDataSource(IMediaDataSource mediaDataSource)
+            throws IllegalArgumentException, SecurityException, IllegalStateException;
 
     @Override
     public String getDataSource() {
@@ -531,6 +546,7 @@ public final class IjkMediaPlayer extends AbstractMediaPlayer {
         }
     }
 
+    @Override
     public IjkTrackInfo[] getTrackInfo() {
         Bundle bundle = getMediaMeta();
         if (bundle == null)
@@ -553,6 +569,32 @@ public final class IjkMediaPlayer extends AbstractMediaPlayer {
 
         return trackInfos.toArray(new IjkTrackInfo[trackInfos.size()]);
     }
+
+    // TODO: @Override
+    public int getSelectedTrack(int trackType) {
+        switch (trackType) {
+            case ITrackInfo.MEDIA_TRACK_TYPE_VIDEO:
+                return (int)_getPropertyLong(FFP_PROP_INT64_SELECTED_VIDEO_STREAM, -1);
+            case ITrackInfo.MEDIA_TRACK_TYPE_AUDIO:
+                return (int)_getPropertyLong(FFP_PROP_INT64_SELECTED_AUDIO_STREAM, -1);
+            default:
+                return -1;
+        }
+    }
+
+    // experimental, should set DEFAULT_MIN_FRAMES and MAX_MIN_FRAMES to 25
+    // TODO: @Override
+    public void selectTrack(int track) {
+        _setStreamSelected(track, true);
+    }
+
+    // experimental, should set DEFAULT_MIN_FRAMES and MAX_MIN_FRAMES to 25
+    // TODO: @Override
+    public void deselectTrack(int track) {
+        _setStreamSelected(track, false);
+    }
+
+    private native void _setStreamSelected(int stream, boolean select);
 
     @Override
     public int getVideoWidth() {
@@ -661,7 +703,11 @@ public final class IjkMediaPlayer extends AbstractMediaPlayer {
     }
 
     private native float _getPropertyFloat(int property, float defaultValue);
+    private native void  _setPropertyFloat(int property, float value);
+    private native long  _getPropertyLong(int property, long defaultValue);
+    private native void  _setPropertyLong(int property, long value);
 
+    @Override
     public native void setVolume(float leftVolume, float rightVolume);
 
     @Override
@@ -901,25 +947,6 @@ public final class IjkMediaPlayer extends AbstractMediaPlayer {
         public String onControlResolveSegmentUrl(int segment);
     }
 
-    @CalledByNative
-    private static String onControlResolveSegmentUrl(Object weakThiz, int segment) {
-        DebugLog.ifmt(TAG, "onControlResolveSegmentUrl %d", segment);
-        if (weakThiz == null || !(weakThiz instanceof WeakReference<?>))
-            return null;
-
-        @SuppressWarnings("unchecked")
-        WeakReference<IjkMediaPlayer> weakPlayer = (WeakReference<IjkMediaPlayer>) weakThiz;
-        IjkMediaPlayer player = weakPlayer.get();
-        if (player == null)
-            return null;
-
-        OnControlMessageListener listener = player.mOnControlMessageListener;
-        if (listener == null)
-            return null;
-
-        return listener.onControlResolveSegmentUrl(segment);
-    }
-
     /*
      * NativeInvoke
      */
@@ -929,28 +956,60 @@ public final class IjkMediaPlayer extends AbstractMediaPlayer {
         mOnNativeInvokeListener = listener;
     }
 
-    public static interface OnNativeInvokeListener {
-        /* return whether invoke is handled */
-        public boolean onNativeInvoke(int what, Bundle args);
+    public interface OnNativeInvokeListener {
+        int ON_CONCAT_RESOLVE_SEGMENT = 0x10000;
+        int ON_TCP_OPEN = 0x10001;
+        int ON_HTTP_OPEN = 0x10002;
+        // int ON_HTTP_RETRY = 0x10003;
+        int ON_LIVE_RETRY = 0x10004;
+
+        String ARG_URL = "url";
+        String ARG_SEGMENT_INDEX = "segment_index";
+        String ARG_RETRY_COUNTER = "retry_counter";
+
+        /*
+         * @return true if invoke is handled
+         * @throws Exception on any error
+         */
+        boolean onNativeInvoke(int what, Bundle args);
     }
 
     @CalledByNative
     private static boolean onNativeInvoke(Object weakThiz, int what, Bundle args) {
         DebugLog.ifmt(TAG, "onNativeInvoke %d", what);
         if (weakThiz == null || !(weakThiz instanceof WeakReference<?>))
-            return false;
+            throw new IllegalStateException("<null weakThiz>.onNativeInvoke()");
 
         @SuppressWarnings("unchecked")
         WeakReference<IjkMediaPlayer> weakPlayer = (WeakReference<IjkMediaPlayer>) weakThiz;
         IjkMediaPlayer player = weakPlayer.get();
         if (player == null)
-            return false;
+            throw new IllegalStateException("<null weakPlayer>.onNativeInvoke()");
 
         OnNativeInvokeListener listener = player.mOnNativeInvokeListener;
-        if (listener == null)
-            return false;
+        if (listener != null && listener.onNativeInvoke(what, args))
+            return true;
 
-        return listener.onNativeInvoke(what, args);
+        switch (what) {
+            case OnNativeInvokeListener.ON_CONCAT_RESOLVE_SEGMENT: {
+                OnControlMessageListener onControlMessageListener = player.mOnControlMessageListener;
+                if (onControlMessageListener == null)
+                    return false;
+
+                int segmentIndex = args.getInt(OnNativeInvokeListener.ARG_SEGMENT_INDEX, -1);
+                if (segmentIndex < 0)
+                    throw new InvalidParameterException("onNativeInvoke(invalid segment index)");
+
+                String newUrl = onControlMessageListener.onControlResolveSegmentUrl(segmentIndex);
+                if (newUrl == null)
+                    throw new RuntimeException(new IOException("onNativeInvoke() = <NULL newUrl>"));
+
+                args.putString(OnNativeInvokeListener.ARG_URL, newUrl);
+                return true;
+            }
+            default:
+                return false;
+        }
     }
 
     /*
