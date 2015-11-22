@@ -1,0 +1,8 @@
+<resources>
+    <string name="app_name">Video</string>
+    <string name="Ukraine">Ukraine</string>
+    <string name="Russian">Russian</string>
+    <string name="Favourites">Favourite</string>
+    <string name="open_dialog_title">Open stream</string>
+    <string name="all">All</string>
+</resources>
