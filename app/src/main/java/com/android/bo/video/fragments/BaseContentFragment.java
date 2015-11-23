@@ -7,6 +7,7 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -20,7 +21,8 @@ import com.android.bo.video.models.Channels;
 import com.android.bo.video.network.ApiClient;
 import com.android.bo.video.network.ApiError;
 import com.android.bo.video.network.ApiListener;
-import com.android.bo.video.types.Types;
+import com.android.bo.video.utils.DividerItemDecoration;
+import com.android.bo.video.utils.Types;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -36,7 +38,7 @@ public class BaseContentFragment extends BaseFragment {
     private Types.Tabs type;
     private ArrayList<Channel> channels = new Channels();
     private ChannelsAdapter adapter;
-    private int countBisy;
+    private int countBusy;
     private int currentRequestSize;
 
     public class ChannelNameComparator implements Comparator<Channel> {
@@ -70,7 +72,6 @@ public class BaseContentFragment extends BaseFragment {
                 bar.setTitle(name);
             type = (Types.Tabs) getArguments().get(TABS_TYPE);
         }
-
     }
 
     private void initFragmentData(View view) {
@@ -98,11 +99,12 @@ public class BaseContentFragment extends BaseFragment {
             }
             recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
             adapter = new ChannelsAdapter(channels, getActivity());
+            recyclerView.addItemDecoration(new DividerItemDecoration(getActivity(), DividerItemDecoration.VERTICAL_LIST));
             recyclerView.setAdapter(adapter);
             ItemClickSupport.addTo(recyclerView).setOnItemClickListener(new ItemClickSupport.OnItemClickListener() {
                 @Override
                 public void onItemClicked(RecyclerView recyclerView, int position, View v) {
-                    showDialog(channels.get(position));
+                    showDialog(adapter.getItemAtPosition(position));
                 }
             });
         }
@@ -128,7 +130,7 @@ public class BaseContentFragment extends BaseFragment {
 
     private void getChannels(final ArrayList<Types.Uris> uris) {
         showProgress(null);
-        countBisy = 0;
+        countBusy = 0;
         currentRequestSize = uris.size();
         for (Types.Uris uri : uris) {
             ApiClient.getSharedInstance().getChannels(uri, new ApiListener<Channels>(Channels.class) {
@@ -146,7 +148,7 @@ public class BaseContentFragment extends BaseFragment {
     }
 
     private void mergeChannels(Channels newChannels) {
-        countBisy++;
+        countBusy++;
         for (Channel channel : newChannels) {
             if (channels.contains(channel)) {
                 channels.get(channels.indexOf(channel)).addUri(new ArrayList<>(channel.getUri()));
@@ -156,8 +158,27 @@ public class BaseContentFragment extends BaseFragment {
         }
         Collections.sort(channels, new ChannelNameComparator());
         adapter.setChannels(channels);
-        if (countBisy == currentRequestSize) {
+        if (countBusy == currentRequestSize) {
             dismissProgress();
+        }
+    }
+
+    public void doSearch(String searchData) {
+        if (!TextUtils.isEmpty(searchData)) {
+            String query = searchData.toLowerCase();
+            final ArrayList<Channel> filteredModelList = new ArrayList<>();
+            for (Channel model : channels) {
+                final String text = model.getName().toLowerCase();
+                if (text.contains(query)) {
+                    filteredModelList.add(model);
+                }
+            }
+
+            Collections.sort(filteredModelList, new ChannelNameComparator());
+            adapter.setChannels(filteredModelList);
+        } else {
+            Collections.sort(channels, new ChannelNameComparator());
+            adapter.setChannels(channels);
         }
     }
 }

@@ -53,7 +53,7 @@ public class ChannelsAdapter extends RecyclerView.Adapter<ChannelsAdapter.ViewHo
         return channels == null ? 0 : channels.size();
     }
 
-    public class ViewHolder extends RecyclerView.ViewHolder{
+    public class ViewHolder extends RecyclerView.ViewHolder {
         // each data item is just a string in this case
         public ImageView image;
         public TextView textViewName;
@@ -65,6 +65,10 @@ public class ChannelsAdapter extends RecyclerView.Adapter<ChannelsAdapter.ViewHo
             textViewName = (TextView) view.findViewById(R.id.ChannelName);
             checkboxIsFav = (CheckBox) view.findViewById(R.id.isChannelFavourite);
         }
+    }
+
+    public Channel getItemAtPosition(int position) {
+        return channels != null && position < channels.size() ? channels.get(position) : null;
     }
 
 }

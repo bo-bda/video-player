@@ -3,9 +3,13 @@ package com.android.bo.video.activities;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v7.app.ActionBar;
+import android.view.Window;
+import android.view.WindowManager;
 
 import com.android.bo.video.R;
 import com.android.bo.video.models.Channel;
+import com.android.bo.video.stream.AndroidMediaController;
 import com.android.bo.video.stream.IjkVideoView;
 
 
@@ -17,6 +21,7 @@ public class PlayerActivity extends BaseActivity {
     private final static String CHANNEL_TAG = "channel";
     private final static String CHANNEL_URI_TAG = "channelUri";
     private IjkVideoView ijkVideoView;
+    private AndroidMediaController mMediaController;
 
     public static Intent getLaunchPlayerActivity(Context context, Channel channel, String url) {
         Intent intent = new Intent(context, PlayerActivity.class);
@@ -33,8 +38,12 @@ public class PlayerActivity extends BaseActivity {
         String url = getIntent().getStringExtra(CHANNEL_URI_TAG);
         if (getSupportActionBar() != null)
             getSupportActionBar().setTitle(channel.getName());
+        mMediaController = new AndroidMediaController(this, false);
+
         ijkVideoView = (IjkVideoView) findViewById(R.id.player);
         ijkVideoView.setVideoPath(url);
+
+        ijkVideoView.setMediaController(mMediaController);
         ijkVideoView.start();
     }
 

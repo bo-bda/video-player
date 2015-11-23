@@ -6,7 +6,7 @@ import android.text.TextUtils;
 import com.android.bo.video.BoApplication;
 import com.android.bo.video.m3uparser.M3UParser;
 import com.android.bo.video.models.Channels;
-import com.android.bo.video.types.Types;
+import com.android.bo.video.utils.Types;
 import com.android.volley.NetworkResponse;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;

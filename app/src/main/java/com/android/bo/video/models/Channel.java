@@ -4,7 +4,6 @@ import android.os.Parcel;
 import android.os.Parcelable;
 
 import com.android.bo.video.R;
-import com.android.bo.video.types.Types;
 
 import java.util.ArrayList;
 import java.util.HashSet;
