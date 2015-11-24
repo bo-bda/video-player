@@ -13,6 +13,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.android.bo.video.R;
+import com.android.bo.video.activities.MainActivity;
 import com.android.bo.video.activities.PlayerActivity;
 import com.android.bo.video.adapters.ChannelsAdapter;
 import com.android.bo.video.interfaces.ItemClickSupport;
@@ -123,6 +124,10 @@ public class BaseContentFragment extends BaseFragment {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 startActivity(PlayerActivity.getLaunchPlayerActivity(getActivity(), channel, (String) channel.getUri().toArray()[which]));
+                if (getBaseActivity() != null && getBaseActivity() instanceof MainActivity) {
+                    getBaseActivity().hideKeyboard();
+                    ((MainActivity) getBaseActivity()).hideSearch();
+                }
             }
         });
         builder.show();

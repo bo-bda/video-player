@@ -5,10 +5,8 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTabHost;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.ActionBar;
-import android.support.v7.view.menu.MenuItemImpl;
 import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -52,14 +50,10 @@ public class MainActivity extends BaseActivity implements SearchView.OnQueryText
         mTabHost.setOnTabChangedListener(new TabHost.OnTabChangeListener() {
             @Override
             public void onTabChanged(String tabId) {
-                if (searchMenuItem != null && searchMenuItem.isActionViewExpanded()) {
-                    searchMenuItem.collapseActionView();
-                    hideKeyboard();
-                    mSearchView.setQuery(null, false);
-                }
+                hideSearch();
             }
         });
-        mTabHost.setup(this, getSupportFragmentManager(), R.id.tabFrameLayout);
+        mTabHost.setup(this, getSupportFragmentManager(), android.R.id.tabcontent);
 
         String ukraineTabName = getString(R.string.Ukraine);
         mTabHost.addTab(mTabHost.newTabSpec(ukraineTabName).setIndicator(ukraineTabName),
@@ -76,6 +70,14 @@ public class MainActivity extends BaseActivity implements SearchView.OnQueryText
         String favouritesTabName = getString(R.string.Favourites);
         mTabHost.addTab(mTabHost.newTabSpec(favouritesTabName).setIndicator(favouritesTabName),
                 BaseContentFragment.class, BaseContentFragment.createFragment(favouritesTabName, Types.Tabs.Favourite));
+    }
+
+    public void hideSearch() {
+        if (searchMenuItem != null && searchMenuItem.isActionViewExpanded()) {
+            searchMenuItem.collapseActionView();
+            hideKeyboard();
+            mSearchView.setQuery(null, false);
+        }
     }
 
     @Override
@@ -116,7 +118,7 @@ public class MainActivity extends BaseActivity implements SearchView.OnQueryText
     }
 
     private void doSearch(String query) {
-        Fragment currentFragment = getSupportFragmentManager().findFragmentById(R.id.tabFrameLayout);
+        Fragment currentFragment = getSupportFragmentManager().findFragmentById(android.R.id.tabcontent);
         if (currentFragment != null && currentFragment instanceof BaseContentFragment) {
             ((BaseContentFragment) currentFragment).doSearch(query);
         }

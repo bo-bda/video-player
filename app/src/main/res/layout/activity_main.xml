@@ -16,26 +16,37 @@
 
     <android.support.v4.app.FragmentTabHost
         android:id="@android:id/tabhost"
-        android:layout_marginTop="?attr/actionBarSize"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:layout_marginTop="?attr/actionBarSize"
+        android:isScrollContainer="true">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:orientation="vertical">
 
-            <TabWidget
-                android:id="@+id/tabs"
+            <HorizontalScrollView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal" />
+                android:fillViewport="true"
+                android:fadingEdge="horizontal"
+                android:fadingEdgeLength="80dp"
+                android:requiresFadingEdge="horizontal"
+                android:scrollbars="none">
+
+                <TabWidget
+                    android:id="@android:id/tabs"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:overScrollMode="always" />
+            </HorizontalScrollView>
 
             <FrameLayout
-                android:layout_marginTop="?attr/actionBarSize"
-                android:id="@+id/tabFrameLayout"
+                android:id="@android:id/tabcontent"
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
+                android:layout_marginTop="?attr/actionBarSize"
                 android:layout_weight="1" />
         </LinearLayout>
 
