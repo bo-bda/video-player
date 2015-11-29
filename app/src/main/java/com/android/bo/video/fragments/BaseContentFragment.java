@@ -28,6 +28,7 @@ import com.android.bo.video.utils.Types;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashSet;
 
 /**
  * A placeholder fragment containing a simple view.
@@ -124,10 +125,7 @@ public class BaseContentFragment extends BaseFragment {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 startActivity(PlayerActivity.getLaunchPlayerActivity(getActivity(), channel, (String) channel.getUri().toArray()[which]));
-                if (getBaseActivity() != null && getBaseActivity() instanceof MainActivity) {
-                    getBaseActivity().hideKeyboard();
-                    ((MainActivity) getBaseActivity()).hideSearch();
-                }
+                hideKeyboard();
             }
         });
         builder.show();
@@ -155,10 +153,13 @@ public class BaseContentFragment extends BaseFragment {
     private void mergeChannels(Channels newChannels) {
         countBusy++;
         for (Channel channel : newChannels) {
-            if (channels.contains(channel)) {
-                channels.get(channels.indexOf(channel)).addUri(new ArrayList<>(channel.getUri()));
+            Channel currentChannel = channel;
+            if (channels.contains(currentChannel)) {
+                HashSet<String> uri = currentChannel.getUri();
+                if (!currentChannel.getUri().contains(uri))
+                    channels.get(channels.indexOf(currentChannel)).addUri(new ArrayList<>(uri));
             } else {
-                channels.add(channel);
+                channels.add(currentChannel);
             }
         }
         Collections.sort(channels, new ChannelNameComparator());

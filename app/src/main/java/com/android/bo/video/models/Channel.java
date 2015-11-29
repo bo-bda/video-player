@@ -76,7 +76,7 @@ public class Channel implements Parcelable {
 
     @Override
     public boolean equals(Object o) {
-        return o instanceof Channel && ((Channel) o).name.equalsIgnoreCase(name);
+        return o instanceof Channel && ((Channel) o).name.trim().equalsIgnoreCase(this.name.trim());
     }
 
     @Override

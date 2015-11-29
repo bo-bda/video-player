@@ -54,6 +54,12 @@ public class PlayerActivity extends BaseActivity {
                 progressBar.setVisibility(View.GONE);
             }
         });
+        ijkVideoView.setOnCompletionListener(new IMediaPlayer.OnCompletionListener() {
+            @Override
+            public void onCompletion(IMediaPlayer mp) {
+                finish();
+            }
+        });
         ijkVideoView.start();
     }
 
