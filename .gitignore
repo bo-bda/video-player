@@ -42,4 +42,3 @@ build/
 .DS_Store
 ijkplayer-armv7a/src/main/jni/android-ndk-prof
 ijkplayer-armv7a/src/main/jni/ijkmedia
-sh.exe.stackdump

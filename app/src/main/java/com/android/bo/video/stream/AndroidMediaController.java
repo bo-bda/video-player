@@ -1,13 +1,11 @@
 package com.android.bo.video.stream;
 
-import android.app.Activity;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.util.AttributeSet;
 import android.view.View;
-import android.view.Window;
 import android.view.WindowManager;
 import android.widget.MediaController;
 
