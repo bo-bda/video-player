@@ -4,6 +4,7 @@
     android:layout_height="match_parent"
     android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingRight="@dimen/activity_horizontal_margin"
+    android:background="@android:color/white"
     tools:showIn="@layout/activity_main">
 
     <android.support.v7.widget.RecyclerView

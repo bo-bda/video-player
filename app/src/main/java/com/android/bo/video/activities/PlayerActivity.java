@@ -8,9 +8,16 @@ import android.widget.ProgressBar;
 
 import com.android.bo.video.R;
 import com.android.bo.video.dreamfactory.DFChannel;
+import com.android.bo.video.dreamfactory.DFRequest;
+import com.android.bo.video.dreamfactory.DFUrlByChannelId;
+import com.android.bo.video.dreamfactory.RESTClient;
 import com.android.bo.video.models.Channel;
 import com.android.bo.video.stream.AndroidMediaController;
 import com.android.bo.video.stream.IjkVideoView;
+import com.android.bo.video.utils.Storage;
+
+import java.util.Collections;
+import java.util.List;
 
 import tv.danmaku.ijk.media.player.IMediaPlayer;
 
@@ -26,6 +33,8 @@ public class PlayerActivity extends BaseActivity {
     private IjkVideoView ijkVideoView;
     private AndroidMediaController mMediaController;
     private ProgressBar progressBar;
+    private String urlPlay;
+    private DFChannel dfChannel;
 
     public static Intent getLaunchPlayerActivity(Context context, Channel channel, String url) {
         Intent intent = new Intent(context, PlayerActivity.class);
@@ -47,9 +56,9 @@ public class PlayerActivity extends BaseActivity {
         setContentView(R.layout.activity_player);
         if (getIntent() != null && getIntent().getExtras() != null) {
 
-            DFChannel dfChannel = getIntent().getParcelableExtra(DF_CHANNEL_TAG);
+            dfChannel = getIntent().getParcelableExtra(DF_CHANNEL_TAG);
             Channel channel = getIntent().getParcelableExtra(CHANNEL_TAG);
-            String url = getIntent().getStringExtra(CHANNEL_URI_TAG);
+            urlPlay = getIntent().getStringExtra(CHANNEL_URI_TAG);
 
             if (getSupportActionBar() != null) {
                 String name = channel == null ? dfChannel.getChannelName() : channel.getName();
@@ -60,22 +69,40 @@ public class PlayerActivity extends BaseActivity {
             progressBar = (ProgressBar) findViewById(R.id.progressbar);
 
             ijkVideoView = (IjkVideoView) findViewById(R.id.player);
-            ijkVideoView.setVideoPath(url);
+            ijkVideoView.setVideoPath(urlPlay);
 
             ijkVideoView.setMediaController(mMediaController);
             ijkVideoView.setOnPreparedListener(new IMediaPlayer.OnPreparedListener() {
                 @Override
                 public void onPrepared(IMediaPlayer mp) {
                     progressBar.setVisibility(View.GONE);
+                    updateChannelState(dfChannel, true);
                 }
             });
             ijkVideoView.setOnCompletionListener(new IMediaPlayer.OnCompletionListener() {
                 @Override
                 public void onCompletion(IMediaPlayer mp) {
+                    updateChannelState(dfChannel, false);
                     finish();
                 }
             });
             ijkVideoView.start();
+        }
+    }
+
+    private void updateChannelState(DFChannel dfChannel, boolean isWork) {
+        String sessionToken = Storage.getInstance().getUserProfile().getSessionToken();
+        DFUrlByChannelId urlByChannelId = null;
+        for (DFUrlByChannelId dfUrlByChannelId : dfChannel.getUrlByChannelId()) {
+            if (dfUrlByChannelId.getUrl().equalsIgnoreCase(urlPlay)) {
+                dfUrlByChannelId.setIsWork(isWork);
+                urlByChannelId = dfUrlByChannelId;
+                break;
+            }
+        }
+        if (urlByChannelId != null) {
+            DFRequest<DFUrlByChannelId> url = new DFRequest<>(Collections.singletonList(urlByChannelId));
+            RESTClient.getInstance().updateChannel(sessionToken, urlByChannelId.getId(), url);
         }
     }
 

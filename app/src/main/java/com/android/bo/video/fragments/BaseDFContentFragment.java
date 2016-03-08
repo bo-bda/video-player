@@ -21,12 +21,14 @@ import com.android.bo.video.dreamfactory.DFChannel;
 import com.android.bo.video.dreamfactory.DFUrlByChannelId;
 import com.android.bo.video.dreamfactory.RESTClient;
 import com.android.bo.video.interfaces.ItemClickSupport;
+import com.android.bo.video.interfaces.OnChannelUrlClickListener;
 import com.android.bo.video.models.Channel;
 import com.android.bo.video.models.Channels;
 import com.android.bo.video.network.ApiClient;
 import com.android.bo.video.network.ApiError;
 import com.android.bo.video.network.ApiListener;
 import com.android.bo.video.utils.DividerItemDecoration;
+import com.android.bo.video.utils.SpaceItemDecoration;
 import com.android.bo.video.utils.Types;
 
 import java.util.ArrayList;
@@ -37,13 +39,19 @@ import java.util.HashSet;
 /**
  * A placeholder fragment containing a simple view.
  */
-public class BaseDFContentFragment extends BaseFragment {
+public class BaseDFContentFragment extends BaseFragment implements OnChannelUrlClickListener {
 
     private static final String ACTION_BAR_NAME = "actionBarName";
     private static final String CHANNELS_TAG = "Channel";
     private Channels<DFChannel> channels = new Channels<>();
     private DFChannelsAdapter adapter;
     private String name;
+
+    @Override
+    public void onChannelUrlClick(String url, DFChannel dfChannel) {
+        startActivity(PlayerActivity.getLaunchPlayerActivity(getActivity(), dfChannel, url));
+        hideKeyboard();
+    }
 
     public class DFChannelNameComparator implements Comparator<DFChannel> {
         @Override
@@ -97,15 +105,9 @@ public class BaseDFContentFragment extends BaseFragment {
             if (channels == null)
                 channels = new Channels<>();
             recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
-            adapter = new DFChannelsAdapter(channels, getActivity());
-            recyclerView.addItemDecoration(new DividerItemDecoration(getActivity(), DividerItemDecoration.VERTICAL_LIST));
+            adapter = new DFChannelsAdapter(channels, getActivity(), this);
+            recyclerView.addItemDecoration(new SpaceItemDecoration(10, true, true));
             recyclerView.setAdapter(adapter);
-            ItemClickSupport.addTo(recyclerView).setOnItemClickListener(new ItemClickSupport.OnItemClickListener() {
-                @Override
-                public void onItemClicked(RecyclerView recyclerView, int position, View v) {
-                    showDialog(adapter.getItemAtPosition(position));
-                }
-            });
         }
     }
 
@@ -121,7 +123,7 @@ public class BaseDFContentFragment extends BaseFragment {
         builder.setItems(actions, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                ArrayList<DFUrlByChannelId> dfUrlByChannelIds = (ArrayList<DFUrlByChannelId>) channel.getUrlByChannelId();
+                ArrayList<DFUrlByChannelId> dfUrlByChannelIds = channel.getUrlByChannelId();
                 startActivity(PlayerActivity.getLaunchPlayerActivity(getActivity(), channel, dfUrlByChannelIds.get(which).getUrl()));
                 hideKeyboard();
             }

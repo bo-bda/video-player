@@ -33,6 +33,7 @@
 
         <activity
             android:name=".activities.PlayerActivity"
+            android:theme="@style/Theme.AppCompat.Light.NoActionBar.FullScreen"
             android:screenOrientation="userLandscape">
             <intent-filter>
                 <category android:name="android.intent.category.HOME" />

@@ -14,6 +14,7 @@ import java.util.List;
  */
 public class DFChannel implements Parcelable {
 
+    @Expose (serialize = false, deserialize =  true)
     private long id;
     @SerializedName("channel_name")
     @Expose
@@ -23,7 +24,7 @@ public class DFChannel implements Parcelable {
     private String channelCountry;
     @SerializedName("url_by_channel_id")
     @Expose
-    private List<DFUrlByChannelId> urlByChannelId = new ArrayList<>();
+    private ArrayList<DFUrlByChannelId> urlByChannelId = new ArrayList<>();
 
     public DFChannel(String channelName, String channelCountry) {
         this.channelName = channelName;
@@ -69,14 +70,14 @@ public class DFChannel implements Parcelable {
     /**
      * @return The urlByChannelId
      */
-    public List<DFUrlByChannelId> getUrlByChannelId() {
+    public ArrayList<DFUrlByChannelId> getUrlByChannelId() {
         return urlByChannelId;
     }
 
     /**
      * @param urlByChannelId The url_by_channel_id
      */
-    public void setUrlByChannelId(List<DFUrlByChannelId> urlByChannelId) {
+    public void setUrlByChannelId(ArrayList<DFUrlByChannelId> urlByChannelId) {
         this.urlByChannelId = urlByChannelId;
     }
 

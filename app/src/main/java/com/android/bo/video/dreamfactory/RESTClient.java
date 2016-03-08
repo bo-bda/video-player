@@ -22,7 +22,10 @@ import retrofit2.http.Body;
 import retrofit2.http.GET;
 import retrofit2.http.Header;
 import retrofit2.http.Headers;
+import retrofit2.http.PATCH;
 import retrofit2.http.POST;
+import retrofit2.http.Path;
+import retrofit2.http.Query;
 
 /*
  * Created by Bo on 06.03.2016.
@@ -70,6 +73,19 @@ public class RESTClient {
         retrofit.create(DFService.class).getChannels(token).enqueue(listener);
     }
 
+    public void updateChannel(String token, long channelId, DFRequest<DFUrlByChannelId> channels) {
+        retrofit.create(DFService.class).updateChannel(token, channelId, channels).enqueue(new Callback<DFResponse<DFUrlByChannelId>>() {
+            @Override
+            public void onResponse(Call<DFResponse<DFUrlByChannelId>> call, Response<DFResponse<DFUrlByChannelId>> response) {
+
+            }
+
+            @Override
+            public void onFailure(Call<DFResponse<DFUrlByChannelId>> call, Throwable t) {
+
+            }
+        });
+    }
 
     public void sync(Channels<Channel> channels) {
         if (channels != null) {
@@ -158,6 +174,13 @@ public class RESTClient {
                 "Content-Type: application/json"
         })
         Call<DFResponse<DFChannel>> getChannels(@Header("X-DreamFactory-Session-Token") String sessionToken);
+
+        @PATCH("db/_table/url")
+        @Headers({"X-DreamFactory-Api-Key: " + APP_KEY_DF,
+                "Content-Type: application/json"})
+        Call<DFResponse<DFUrlByChannelId>> updateChannel(@Header("X-DreamFactory-Session-Token") String sessionToken,
+                                                  @Query("ids") long urlId,
+                                                  @Body DFRequest url);
 
     }
 }

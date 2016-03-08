@@ -25,6 +25,7 @@ import com.android.bo.video.network.ApiClient;
 import com.android.bo.video.network.ApiError;
 import com.android.bo.video.network.ApiListener;
 import com.android.bo.video.utils.DividerItemDecoration;
+import com.android.bo.video.utils.SpaceItemDecoration;
 import com.android.bo.video.utils.Types;
 
 import java.util.ArrayList;
@@ -102,7 +103,7 @@ public class BaseContentFragment extends BaseFragment {
             }
             recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
             adapter = new ChannelsAdapter(channels, getActivity());
-            recyclerView.addItemDecoration(new DividerItemDecoration(getActivity(), DividerItemDecoration.VERTICAL_LIST));
+            recyclerView.addItemDecoration(new SpaceItemDecoration(5, false, false));
             recyclerView.setAdapter(adapter);
             ItemClickSupport.addTo(recyclerView).setOnItemClickListener(new ItemClickSupport.OnItemClickListener() {
                 @Override

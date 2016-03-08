@@ -6,4 +6,5 @@
     <string name="open_dialog_title">Open stream</string>
     <string name="all">All</string>
     <string name="action_search">search</string>
+    <string name="stream_number">"Stream %d"</string>
 </resources>
