@@ -1,5 +1,7 @@
 package com.android.bo.video.activities;
 
+import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTabHost;
@@ -13,13 +15,26 @@ import android.view.View;
 import android.widget.TabHost;
 
 import com.android.bo.video.R;
-import com.android.bo.video.fragments.BaseContentFragment;
-import com.android.bo.video.utils.Types;
+import com.android.bo.video.dreamfactory.DFChannel;
+import com.android.bo.video.fragments.BaseDFContentFragment;
+import com.android.bo.video.models.Channels;
+
+import java.util.ArrayList;
 
 public class MainActivity extends BaseActivity implements SearchView.OnQueryTextListener, MenuItemCompat.OnActionExpandListener {
 
+    private final static String CHANNELS_TAG = "Channel";
+
     private SearchView mSearchView;
     private MenuItem searchMenuItem;
+    private Channels<DFChannel> dfChannels = new Channels<>();
+
+    public static Intent getLaunchMainActivity(Context context, Channels<DFChannel> channels) {
+        Intent intent = new Intent(context, MainActivity.class);
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        intent.putParcelableArrayListExtra(CHANNELS_TAG, channels);
+        return intent;
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -34,6 +49,10 @@ public class MainActivity extends BaseActivity implements SearchView.OnQueryText
 //                        .setAction("Action", null).show();
 //            }
 //        });
+        if (getIntent() != null && getIntent().getExtras() != null) {
+            ArrayList<DFChannel> channels = getIntent().getParcelableArrayListExtra(CHANNELS_TAG);
+            dfChannels.addAll(channels);
+        }
         setupToolbar();
         setUpTabHost();
     }
@@ -57,19 +76,19 @@ public class MainActivity extends BaseActivity implements SearchView.OnQueryText
 
         String ukraineTabName = getString(R.string.Ukraine);
         mTabHost.addTab(mTabHost.newTabSpec(ukraineTabName).setIndicator(ukraineTabName),
-                BaseContentFragment.class, BaseContentFragment.createFragment(ukraineTabName, Types.Tabs.Ukraine));
+                BaseDFContentFragment.class, BaseDFContentFragment.createFragment(ukraineTabName, dfChannels));
 
         String russianTabName = getString(R.string.Russian);
         mTabHost.addTab(mTabHost.newTabSpec(russianTabName).setIndicator(russianTabName),
-                BaseContentFragment.class, BaseContentFragment.createFragment(russianTabName, Types.Tabs.Russian));
+                BaseDFContentFragment.class, BaseDFContentFragment.createFragment(russianTabName, dfChannels));
 
         String allTabName = getString(R.string.all);
         mTabHost.addTab(mTabHost.newTabSpec(allTabName).setIndicator(allTabName),
-                BaseContentFragment.class, BaseContentFragment.createFragment(allTabName, Types.Tabs.All));
+                BaseDFContentFragment.class, BaseDFContentFragment.createFragment(allTabName, dfChannels));
 
         String favouritesTabName = getString(R.string.Favourites);
         mTabHost.addTab(mTabHost.newTabSpec(favouritesTabName).setIndicator(favouritesTabName),
-                BaseContentFragment.class, BaseContentFragment.createFragment(favouritesTabName, Types.Tabs.Favourite));
+                BaseDFContentFragment.class, BaseDFContentFragment.createFragment(favouritesTabName, dfChannels));
     }
 
     public void hideSearch() {
@@ -119,16 +138,16 @@ public class MainActivity extends BaseActivity implements SearchView.OnQueryText
 
     private void doSearch(String query) {
         Fragment currentFragment = getSupportFragmentManager().findFragmentById(android.R.id.tabcontent);
-        if (currentFragment != null && currentFragment instanceof BaseContentFragment) {
-            ((BaseContentFragment) currentFragment).doSearch(query);
+//        if (currentFragment != null && currentFragment instanceof BaseContentFragment) {
+//            ((BaseContentFragment) currentFragment).doSearch(query);
+//        } else
+        if (currentFragment != null && currentFragment instanceof BaseDFContentFragment) {
+            ((BaseDFContentFragment) currentFragment).doSearch(query);
         }
     }
-
 
     @Override
     public boolean onMenuItemActionCollapse(MenuItem item) {
         return true;
     }
-
-
 }

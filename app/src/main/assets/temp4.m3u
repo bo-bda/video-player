@@ -1,0 +1,7 @@
+ #EXTM3U
+#EXTINF:-1,Спорт 1 (UKR)
+http://video.pvplus.tv/sport1l.m3u8
+#EXTINF:-1,Спорт 2 (UKR)
+http://video.pvplus.tv/sport2l.m3u8
+#EXTINF:-1,hel.tv UA
+http://play.lanet.tv/live/1004.m3u8 

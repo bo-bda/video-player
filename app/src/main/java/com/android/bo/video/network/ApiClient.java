@@ -4,6 +4,7 @@ import android.support.v4.util.ArrayMap;
 import android.text.TextUtils;
 
 import com.android.bo.video.BoApplication;
+import com.android.bo.video.dreamfactory.DFUser;
 import com.android.bo.video.m3uparser.M3UParser;
 import com.android.bo.video.models.Channels;
 import com.android.bo.video.utils.Types;
@@ -11,10 +12,14 @@ import com.android.volley.NetworkResponse;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
+import com.android.volley.error.AuthFailureError;
 import com.android.volley.error.ParseError;
 import com.android.volley.toolbox.HttpHeaderParser;
 import com.android.volley.toolbox.ImageLoader;
 import com.android.volley.toolbox.Volley;
+
+import java.util.HashMap;
+import java.util.Map;
 
 public class ApiClient extends Client {
 
@@ -22,6 +27,7 @@ public class ApiClient extends Client {
     private static ApiClient mInstance;
     private RequestQueue requestQueue;
     private ImageLoader imageLoader;
+    private static final String APP_KEY_DF = "37f49f20bea34d0b7b0564f49e78b9eb0d388bcc74c4c37d716aa030b2db523d";
 
     public ApiClient() {
         super(API_THREAD_NAME);
@@ -82,5 +88,36 @@ public class ApiClient extends Client {
         }
     }
 
+    /*dreamfactory*/
+    /*
+    curl -X POST 'https://df-video-online.enterprise.dreamfactory.com/api/v2/db/_table/channels'
+     --header 'Content-Type: application/json'
+     --header 'Accept: application/json'
+     --header 'X-DreamFactory-Api-Key: 36fda24fe5588fa4285ac6c6c2fdfbdb6b6bc9834699774c9bf777f706d05a88'
+     --header 'X-DreamFactory-Session-Token: eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOjEsInVzZXJfaWQiOjEsImVtYWlsIjoiYm9vLmJkYTg4QGdtYWlsLmNvbSIsImZvcmV2ZXIiOmZhbHNlLCJpc3MiOiJodHRwczpcL1wvZGYtdmlkZW8tb25saW5lLmVudGVycHJpc2UuZHJlYW1mYWN0b3J5LmNvbVwvYXBpXC92Mlwvc3lzdGVtXC9hZG1pblwvc2Vzc2lvbiIsImlhdCI6MTQ1NzIxNjM0OSwiZXhwIjoxNDU3MjE5OTQ5LCJuYmYiOjE0NTcyMTYzNDksImp0aSI6IjQ4YTdhMzcxZGMyYzllNTE3NDdkZDg4ZWIxNDIwZTBiIn0.O5bC5ik5tnvi4qJvSHwUjBFz89MAgrQfa42P4Y_nomo'
+     --header 'Authorization: Basic Ym9vLmJkYTg4QGdtYWlsLmNvbToyMkJveWtvODg='
+      -d '{
+          "resource": [
+            {
+              "channel_name": "test",
+              "country_name": "urkaine"
+            }
+          ]
+        }
+    */
 
+    //login
+    /*
+    curl -X POST 'https://df-video-online.enterprise.dreamfactory.com/api/v2/user/session'
+    --header 'Content-Type: application/json'
+    --header 'Accept: application/json'
+    --header 'X-DreamFactory-Api-Key: 36fda24fe5588fa4285ac6c6c2fdfbdb6b6bc9834699774c9bf777f706d05a88'
+    --header 'X-DreamFactory-Session-Token: eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOjEsInVzZXJfaWQiOjEsImVtYWlsIjoiYm9vLmJkYTg4QGdtYWlsLmNvbSIsImZvcmV2ZXIiOmZhbHNlLCJpc3MiOiJodHRwczpcL1wvZGYtdmlkZW8tb25saW5lLmVudGVycHJpc2UuZHJlYW1mYWN0b3J5LmNvbVwvYXBpXC92Mlwvc3lzdGVtXC9hZG1pblwvc2Vzc2lvbiIsImlhdCI6MTQ1NzIxNjM0OSwiZXhwIjoxNDU3MjI1NTI4LCJuYmYiOjE0NTcyMjE5MjgsImp0aSI6IjVmODliOTdkMTUxOGM1OWQ0YjNjNGRkNDA0MjIwMTEzIn0.7Pz1DFOIFU4NWTapOceiWQZXz9WE3Cpk8UuaA3RWmj4'
+    --header 'Authorization: Basic Ym9vLmJkYTg4QGdtYWlsLmNvbToyMkJveWtvODg='
+     -d '{
+            "email": "boyko_dimka@mail.ru",
+            "password": "123123123Aa",
+            "duration": 0
+        }'
+    */
 }

@@ -165,8 +165,8 @@ public class IjkVideoView extends RelativeLayout implements MediaController.Medi
 
         View renderUIView = mRenderView.getView();
         LayoutParams lp = new LayoutParams(
-                LayoutParams.WRAP_CONTENT,
-                LayoutParams.WRAP_CONTENT);
+                LayoutParams.MATCH_PARENT,
+                LayoutParams.MATCH_PARENT);
         renderUIView.setLayoutParams(lp);
         addView(renderUIView);
 

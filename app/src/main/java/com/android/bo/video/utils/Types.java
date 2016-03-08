@@ -14,33 +14,42 @@ public class Types {
         Favourite
     }
 
-    public static ArrayList<Uris> UrkaineChannels = new ArrayList<Uris>() {
-        {
-            add(Uris.Triolan1);
-            add(Uris.Triolan2);
-            add(Uris.UkraineTV);
-        }
-    };
+//    public static ArrayList<Uris> UrkaineChannels = new ArrayList<Uris>() {
+//        {
+//            add(Uris.Triolan1);
+//            add(Uris.Triolan2);
+//            add(Uris.UkraineTV);
+//        }
+//    };
 
-    public static ArrayList<Uris> RussainChannels = new ArrayList<Uris>() {
-        {
-            add(Uris.RussianTv);
-            add(Uris.RusTelecom);
-            add(Uris.ZabavaSlyUkraine);
-            add(Uris.Denms);
-        }
-    };
+//    public static ArrayList<Uris> RussainChannels = new ArrayList<Uris>() {
+//        {
+//            add(Uris.RussianTv);
+//            add(Uris.RusTelecom);
+//            add(Uris.ZabavaSlyUkraine);
+//            add(Uris.Denms);
+//        }
+//    };
 
     public static ArrayList<Uris> AllChannels = new ArrayList<Uris>() {
         {
-            add(Uris.KamikadzeAll);
-            add(Uris.Triolan1);
-            add(Uris.Triolan2);
-            add(Uris.RussianTv);
-            add(Uris.UkraineTV);
-            add(Uris.RusTelecom);
-            add(Uris.ZabavaSlyUkraine);
-            add(Uris.Denms);
+            add(Uris.KamikadzeAll); //works
+//            add(Uris.Triolan1); //does now work
+//            add(Uris.Triolan2); //does now work
+            add(Uris.RussianTv); //works
+//            add(Uris.UkraineTV); //does now work
+//            add(Uris.RusTelecom); //does now work
+//            add(Uris.ZabavaSlyUkraine); //does now work
+//            add(Uris.Denms); //should check
+            add(Uris.Sport); //should check
+        }
+    };
+
+    public static ArrayList<Uris> Local = new ArrayList<Uris>() {
+        {
+            add(Uris.Local);
+            add(Uris.Local2);
+            add(Uris.Local3);
         }
     };
 
@@ -48,11 +57,17 @@ public class Types {
         KamikadzeAll("http://iptv56.ru/tvtest.m3u", 0, 0, "\r\n", ""),
         Triolan1("http://www.satorbita.com/iptv/free/free4triolan_test.php?list.m3u", 5, 0, "\n", "(Premium)"),
         Triolan2("http://iptvworld.pp.ua/iptv/free/free3triolan_test.php?list.m3u", 5, 0, "\n", "(Premium)"),
-        RussianTv("http://545-tv.com/listRU.php?m3u", 2, 2, "\r\n", "[Premium]"),
-        UkraineTV("http://545-tv.com/listUA.php?m3u", 2, 2, "\r\n", "[Premium]"),
+        RussianTv("http://545-tv.com/listRU.php?m3u", 2, 2, "\n", "[Premium]"),
+        UkraineTV("http://545-tv.com/listUA.php?m3u", 2, 2, "\n", "[Premium]"),
         RusTelecom("http://www.satorbita.com/iptv/free/free5novosibirsk.php?list.m3u", 5, 0, "\n", "(Premium)"),
         ZabavaSlyUkraine("http://slynet.pw/ZabavaSlyUkraine.m3u", 2, 0, "\r\n", "="),
-        Denms("http://iptv.denms.ru/iptv-rt0.m3u", 0, 0, "\r\n", "(Premium)");
+        Denms("http://iptv.denms.ru/iptv-rt0.m3u", 0, 0, "\r\n", "(Premium)"),
+        Sport("http://iptvsensei.ru/wp-content/uploads/2015/02/Sportivnye-kanaly.m3u", 0, 0, "\r\n", ""),
+
+        //local
+        Local("temp2.m3u", 0, 0, "\r\n", ""),
+        Local2("temp3.m3u", 0, 0, "\r\n", ""),
+        Local3("temp4.m3u", 0, 0, "\r\n", "");
 
 
         private String uri;

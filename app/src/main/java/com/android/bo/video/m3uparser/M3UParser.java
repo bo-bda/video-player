@@ -11,8 +11,8 @@ import com.android.bo.video.utils.Types;
  */
 public class M3UParser {
 
-    public Channels parseFile(String stream, Types.Uris uri) {
-        Channels channels = new Channels();
+    public Channels<Channel> parseFile(String stream, Types.Uris uri) {
+        Channels<Channel> channels = new Channels<>();
         if (!TextUtils.isEmpty(stream)) {
             stream = stream.replaceAll("#EXTM3U", "").trim();
             String[] arr = stream.split("#EXTINF.*,");

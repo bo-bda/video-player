@@ -8,6 +8,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,6 +17,7 @@ import com.android.bo.video.R;
 import com.android.bo.video.activities.MainActivity;
 import com.android.bo.video.activities.PlayerActivity;
 import com.android.bo.video.adapters.ChannelsAdapter;
+import com.android.bo.video.dreamfactory.RESTClient;
 import com.android.bo.video.interfaces.ItemClickSupport;
 import com.android.bo.video.models.Channel;
 import com.android.bo.video.models.Channels;
@@ -38,7 +40,7 @@ public class BaseContentFragment extends BaseFragment {
     private static final String ACTION_BAR_NAME = "actionBarName";
     private static final String TABS_TYPE = "tabType";
     private Types.Tabs type;
-    private ArrayList<Channel> channels = new Channels();
+    private Channels<Channel> channels = new Channels<>();
     private ChannelsAdapter adapter;
     private int countBusy;
     private int currentRequestSize;
@@ -79,14 +81,13 @@ public class BaseContentFragment extends BaseFragment {
     private void initFragmentData(View view) {
         if (view != null) {
             RecyclerView recyclerView = (RecyclerView) view.findViewById(R.id.recyclerView);
-            channels = new ArrayList<>();
             switch (type) {
                 case Ukraine:
-                    getChannels(Types.UrkaineChannels);
+//                    getChannels(Types.UrkaineChannels);
                     break;
 
                 case Russian:
-                    getChannels(Types.RussainChannels);
+//                    getChannels(Types.RussainChannels);
                     break;
 
                 case All:
@@ -97,7 +98,7 @@ public class BaseContentFragment extends BaseFragment {
                     break;
 
                 default:
-                    channels = new ArrayList<>();
+                    channels = new Channels<>();
             }
             recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
             adapter = new ChannelsAdapter(channels, getActivity());
@@ -136,21 +137,24 @@ public class BaseContentFragment extends BaseFragment {
         countBusy = 0;
         currentRequestSize = uris.size();
         for (Types.Uris uri : uris) {
+            final String url = uri.getUri();
             ApiClient.getSharedInstance().getChannels(uri, new ApiListener<Channels>(Channels.class) {
                 @Override
                 public void onSuccess(Channels result) {
                     mergeChannels(result);
+                    Log.e("MyTag", "onSuccess: " + url);
                 }
 
                 @Override
                 public void onError(ApiError error) {
                     mergeChannels(new Channels());
+                    Log.e("MyTag", "onError: " + url);
                 }
             });
         }
     }
 
-    private void mergeChannels(Channels newChannels) {
+    private void mergeChannels(Channels<Channel> newChannels) {
         countBusy++;
         for (Channel channel : newChannels) {
             Channel currentChannel = channel;
@@ -163,9 +167,11 @@ public class BaseContentFragment extends BaseFragment {
             }
         }
         Collections.sort(channels, new ChannelNameComparator());
-        adapter.setChannels(channels);
         if (countBusy == currentRequestSize) {
+            adapter.setChannels(channels);
             dismissProgress();
+            RESTClient.getInstance().sync(channels);
+            Log.e("MyTag", type.name() + " total channels = " + channels.size());
         }
     }
 
